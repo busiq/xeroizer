@@ -51,6 +51,16 @@ module Xeroizer
       http_request(client, :put, url, body, extra_params)
     end
 
+    # Shortcut method for #http_request with `method` = :delete.
+    #
+    # @param [OAuth] client OAuth client
+    # @param [String] url URL of request
+    # @param [String] body XML message to put.
+    # @param [Hash] extra_params extra query string parameters.
+    def http_delete(client, url, extra_params = {})
+      http_request(client, :delete, url, extra_params)
+    end
+
     private
 
       def http_request(client, method, url, body, params = {})
@@ -99,9 +109,10 @@ module Xeroizer
           raw_body = params.delete(:raw_body) ? body : {:xml => body}
 
           response = case method
-            when :get   then    client.get(uri.request_uri, headers)
-            when :post  then    client.post(uri.request_uri, raw_body, headers)
-            when :put   then    client.put(uri.request_uri, raw_body, headers)
+            when :get    then    client.get(uri.request_uri, headers)
+            when :delete then    client.delete(uri.request_uri, headers )
+            when :post   then    client.post(uri.request_uri, raw_body, headers)
+            when :put    then    client.put(uri.request_uri, raw_body, headers)
           end
 
           log_response(response, uri)
@@ -109,6 +120,8 @@ module Xeroizer
 
           case response.code.to_i
             when 200
+              response.plain_body
+            when 204
               response.plain_body
             when 400
               handle_error!(response, body)

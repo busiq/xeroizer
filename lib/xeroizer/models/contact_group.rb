@@ -6,7 +6,7 @@ module Xeroizer
     end
 
     class ContactGroup < Base
-
+      set_primary_key :contact_group_id
       guid :contact_group_id
       string :name
       string :status

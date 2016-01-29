@@ -140,6 +140,13 @@ module Xeroizer
           result
         end
 
+        # Removes record matching the passed in ID.
+        def destroy(id, options = {})
+          raise MethodNotAllowed.new(self, :all) unless self.class.permissions[:read]
+          response_xml = @application.http_delete(@application.client, "#{url}/#{CGI.escape(id)}")
+          response = parse_response(response_xml, options)
+        end
+
         def save_records(records, chunk_size = DEFAULT_RECORDS_PER_BATCH_SAVE)
           no_errors = true
           return false unless records.all?(&:valid?)

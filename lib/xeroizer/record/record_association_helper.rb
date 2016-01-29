@@ -36,6 +36,12 @@ module Xeroizer
 
           define_association_attribute(field_name, internal_field_name, :has_many, options)
 
+          define_method "destroy_all_#{field_name}" do
+            self.attributes[field_name] = []
+            parent.application.http_delete(parent.application.client,
+              "#{parent.url}/#{id}/#{field_name.capitalize}")
+          end
+
           # Create an #add_record_name method to build the record and add to the attributes.
           define_method "add_#{internal_singular_field_name}" do | *args |
             # The name of the record model.
